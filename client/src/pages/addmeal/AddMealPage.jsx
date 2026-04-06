@@ -44,6 +44,7 @@ function AddMealPage() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const selectedDate = queryParams.get("date");
+  const dashboardPath = selectedDate ? `/?date=${selectedDate}` : "/";
 
   /*
     Meal history loader
@@ -112,7 +113,7 @@ function AddMealPage() {
       <section className="page-card meal-history-page-card">
         <div className="page-header meal-history-header">
           <div className="meal-history-header-copy">
-            <Link to="/" className="back-button">
+            <Link to={dashboardPath} className="back-button">
               ←
             </Link>
 
@@ -128,7 +129,7 @@ function AddMealPage() {
             </div>
           </div>
 
-          <Link to="/" className="dashboard-action-button meal-history-back-link">
+          <Link to={dashboardPath} className="dashboard-action-button meal-history-back-link">
             Gösterge Paneli
           </Link>
         </div>

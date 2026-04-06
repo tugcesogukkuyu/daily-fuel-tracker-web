@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DashboardHero from "./components/DashboardHero";
 import DashboardNavbar from "./components/DashboardNavbar";
 import DashboardSummarySection from "./components/DashboardSummarySection";
@@ -43,6 +43,23 @@ function formatLocalDateKey(dateValue) {
   return `${year}-${month}-${day}`;
 }
 
+function parseDashboardDate(searchValue) {
+  const queryParams = new URLSearchParams(searchValue);
+  const selectedDateValue = queryParams.get("date");
+
+  if (!selectedDateValue) {
+    return new Date();
+  }
+
+  const parsedDate = new Date(`${selectedDateValue}T12:00:00`);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return new Date();
+  }
+
+  return parsedDate;
+}
+
 /*
   Dashboard page
   Auth durumu, secili tarih ve o tarihe ait tum dashboard verileri burada yonetilir.
@@ -52,8 +69,9 @@ function DashboardPage() {
     Page state
     Kullanici, secili tarih, kayitlar ve UI overlay durumlarini tutar.
   */
+  const location = useLocation();
   const [currentUser, setCurrentUser] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const [selectedDate, setSelectedDate] = useState(() => parseDashboardDate(location.search));
   const [mealRecords, setMealRecords] = useState([]);
   const [exerciseRecords, setExerciseRecords] = useState([]);
   const [filledCupCount, setFilledCupCount] = useState(0);
@@ -63,6 +81,10 @@ function DashboardPage() {
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [accountModalView, setAccountModalView] = useState("account");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSelectedDate(parseDashboardDate(location.search));
+  }, [location.search]);
 
   const selectedDateKey = formatLocalDateKey(selectedDate);
 
@@ -379,7 +401,6 @@ function DashboardPage() {
         isOpen={isMealDrawerOpen}
         onClose={() => setIsMealDrawerOpen(false)}
         onSuccess={async () => {
-          setIsMealDrawerOpen(false);
           await loadDashboardRecords();
         }}
       />

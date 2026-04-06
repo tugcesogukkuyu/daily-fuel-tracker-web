@@ -409,6 +409,9 @@ a {
   color: var(--color-text-secondary);
   font-size: 15px;
   font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -419,6 +422,7 @@ a {
 .active-nav-item {
   background-color: var(--color-text-primary);
   color: var(--color-text-inverse);
+  text-decoration: none;
 }
 
 /* Dashboard summary and macro cards */

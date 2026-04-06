@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { getAuthenticatedUser } from "../../services/authService";
 import { getMeals } from "../../services/mealService";
 import { getExercises } from "../../services/exerciseService";
 
@@ -29,6 +30,7 @@ function CalendarPage() {
     Page state
     Sayfanin ihtiyac duydugu meal, exercise, secili tarih ve gorunen ay state'lerini tutar.
   */
+  const [currentUser, setCurrentUser] = useState(null);
   const [mealRecords, setMealRecords] = useState([]);
   const [exerciseRecords, setExerciseRecords] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -44,11 +46,26 @@ function CalendarPage() {
   useEffect(() => {
     const loadCalendarRecords = async () => {
       try {
+        let authenticatedUser = null;
+
+        try {
+          const authenticatedUserResponse = await getAuthenticatedUser();
+          authenticatedUser = authenticatedUserResponse.data;
+        } catch (error) {
+          setCurrentUser(null);
+          setMealRecords([]);
+          setExerciseRecords([]);
+          return;
+        }
+
         const mealResponse = await getMeals();
         const exerciseResponse = await getExercises();
 
-        setMealRecords(mealResponse.data ?? []);
-        setExerciseRecords(exerciseResponse.data ?? []);
+        setCurrentUser(authenticatedUser);
+        setMealRecords((mealResponse.data ?? []).filter((meal) => meal.user_id === authenticatedUser.id));
+        setExerciseRecords(
+          (exerciseResponse.data ?? []).filter((exercise) => exercise.user_id === authenticatedUser.id)
+        );
       } catch (error) {
         console.error("Takvim verileri alınamadı:", error);
       }
@@ -247,17 +264,17 @@ function CalendarPage() {
 
               <div className="summary-mini-card teal-card">
                 <span>Alınan Kalori</span>
-                <strong>{consumedCalories}</strong>
+                <strong>{currentUser ? consumedCalories : "-"}</strong>
               </div>
 
               <div className="summary-mini-card orange-card">
                 <span>Yakılan Kalori</span>
-                <strong>{burnedCalories}</strong>
+                <strong>{currentUser ? burnedCalories : "-"}</strong>
               </div>
 
               <div className="summary-mini-card purple-card">
                 <span>Net Kalori</span>
-                <strong>{netCalories}</strong>
+                <strong>{currentUser ? netCalories : "-"}</strong>
               </div>
             </div>
 

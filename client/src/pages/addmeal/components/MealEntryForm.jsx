@@ -146,6 +146,8 @@ function MealEntryForm({ onSuccess, onCancel, mode = "page" }) {
       setIsErrorMessage(false);
       setFeedbackMessage(response.message || "Öğün başarıyla eklendi.");
 
+      setServingCount(1);
+
       if (onSuccess) {
         setTimeout(() => {
           onSuccess();
