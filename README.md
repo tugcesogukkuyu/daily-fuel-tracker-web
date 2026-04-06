@@ -1,321 +1,290 @@
 # Daily Fuel Tracker
 
-Daily Fuel Tracker is a full-stack web application that allows users to track their daily nutrition and exercise activities. The project is designed with a real-world application mindset, including authentication, data tracking, and user-based operations.
+A full-stack nutrition and exercise tracking application built with React, Node.js, Express, and MSSQL.
 
 ---
 
-## 🇬🇧 English
+## System Overview
 
-### Overview
+Daily Fuel Tracker is designed as a full-stack system where users can track meals, exercises, and water intake on a daily basis.
 
-Daily Fuel Tracker enables users to:
-
-- Track daily meals and exercises
-- Monitor records based on selected dates
-- Manage user accounts securely
-- Explore blog content related to nutrition
-
-This project is not a simple demo; it is built with a scalable and structured architecture.
+The application is built with a clear separation between frontend and backend layers, handling authentication, data persistence, and date-based filtering logic.
 
 ---
 
-### Features
 
-- User registration and login
-- Account management (change password, logout, delete account)
-- Add, view, and delete meals
-- Add, view, and delete exercises
-- Calendar-based daily tracking
-- Blog listing and detail pages
-- Demo user support for testing
-- Responsive design (mobile, tablet, desktop)
+## Engineering Decisions
 
----
+This project was built with several intentional engineering decisions to reflect real-world development constraints and problem-solving approaches.
 
-### Tech Stack
+### Data Strategy
 
-#### Frontend
-- React.js
-- React Router
-- HTML
-- Plain CSS
+Instead of relying entirely on external APIs, a custom food dataset was created and used in the backend.
 
-#### Backend
-- Node.js
-- Express.js
-- MSSQL
-- JWT Authentication
-- Cookie-based Authentication
+Reasons:
+- Public APIs often lack sufficient Turkish food data
+- API responses may create inconsistency in naming and structure
+- A controlled dataset ensures predictable and stable behavior
 
-#### Other Tools
-- Azure SQL
-- Vercel
-- Render
-- GitHub
+The system is designed to be extendable, allowing API integration in the future if needed.
 
 ---
 
-### Project Structure
+### Hybrid API Usage
+
+To demonstrate API integration capability, external data handling was implemented in the exercise module.
+
+This allows the project to showcase:
+- Static data management (food)
+- Dynamic API-based data (exercise)
+
+---
+
+### Core Capabilities
+
+- Secure user authentication and session handling  
+- Date-driven tracking system for meals, exercises, and water intake  
+- Real-time UI updates without full page reload  
+- Modular dashboard with reusable UI components  
+- Hybrid data management (static + API-based)  
+- Layered backend architecture with clear separation of concerns  
+
+---
+
+### Frontend Design Approach
+
+The UI was built using custom CSS instead of relying fully on frameworks.
+
+Reasons:
+- Full control over layout and visual structure
+- Ability to design a unique dashboard experience
+- Better understanding of layout systems and responsiveness
+
+Additionally:
+- Bootstrap and Tailwind were explored in separate demo pages
+- Figma was used to plan layout structure and UI components
+
+---
+
+### UI/UX Decisions
+
+A drawer-based input system was used instead of separate pages.
+
+Reasons:
+- Prevents context switching
+- Keeps users within the dashboard flow
+- Improves usability and speed of interaction
+
+---
+
+### Architecture Preference
+
+A layered backend structure was preferred over a simpler approach.
+
+Reasons:
+- Separation of concerns
+- Easier debugging and maintenance
+- Scalable for future extensions
+## Architecture
+
+The backend follows a layered architecture:
+
+- **Controller Layer** → Handles HTTP requests and responses  
+- **Service Layer** → Contains business logic  
+- **Repository Layer** → Manages database operations  
+- **Middleware Layer** → Handles authentication and request validation  
+
+This structure improves scalability, maintainability, and testability.
+
+The frontend is built using a modular component-based architecture with React, ensuring reusable UI components and clear state management.
+
+---
+
+
+## Data Flow
+
+The system is based on a date-driven tracking logic:
+
+1. User selects a date from the dashboard  
+2. Frontend sends requests with date parameters  
+3. Backend processes requests and queries the database  
+4. Filtered data is returned  
+5. UI updates dynamically without full page reload  
+
+Data creation flow:
+
+1. User submits data (meal/exercise)  
+2. Request is sent to backend API  
+3. Backend validates and stores data  
+4. Updated data is returned and rendered instantly  
+
+---
+
+## API Endpoints
+
+### Auth
+
+- POST `/api/auth/register` → Register user  
+- POST `/api/auth/login` → Authenticate user  
+- POST `/api/auth/logout` → Logout  
+
+---
+
+### Meals
+
+- GET `/api/meals` → Get meals by date  
+- POST `/api/meals` → Add meal  
+- DELETE `/api/meals/:id` → Delete meal  
+
+---
+
+### Exercises
+
+- GET `/api/exercises` → Get exercises by date  
+- POST `/api/exercises` → Add exercise  
+- DELETE `/api/exercises/:id` → Delete exercise  
+
+---
+
+### Water Tracking
+
+- GET `/api/water` → Get daily logs  
+- POST `/api/water` → Add water entry  
+
+---
+
+### Example Request
+
+```json
+POST /api/meals
+
+{
+  "name": "Chicken Salad",
+  "calories": 350,
+  "protein": 30,
+  "carbs": 20,
+  "fat": 10,
+  "date": "2026-04-06"
+}
+```
+
+### Example Response
+
+```json
+{
+  "id": 1,
+  "name": "Chicken Salad",
+  "calories": 350,
+  "date": "2026-04-06"
+}
+```
+
+---
+
+## Project Structure
 
 ```
 client/
+ ├── src/
+ │   ├── pages/
+ │   ├── components/
+ │   ├── services/
+ │   ├── routes/
+ │   └── assets/
+
 server/
+ ├── src/
+ │   ├── controllers/
+ │   ├── services/
+ │   ├── repositories/
+ │   ├── routes/
+ │   ├── middleware/
+ │   ├── config/
+ │   └── utils/
+
+ ├── database/
+ │   └── schema/
+
+ └── scripts/
+
 docs/
-README.md
-SUNUM_YAZISI.md
-OZELLIKLER.md
+ ├── screenshots/
+ ├── database-schema.md
+ ├── user-flow.md
 ```
 
 ---
 
-### Running the Project
+## Installation
 
-The project consists of two parts:
+### Clone
 
-- client → frontend
-- server → backend
-
-#### 1. Start Backend
-
+```bash
+git clone https://github.com/tugcesogukkuyu/daily-fuel-tracker.git
+cd daily-fuel-tracker
 ```
+
+### Backend
+
+```bash
 cd server
 npm install
 npm run dev
 ```
 
- #### 2. Start Frontend
+### Frontend
 
-```
+```bash
 cd client
 npm install
 npm run dev
 ```
 
-#### 3. Utilization
+### Database
 
-- Backend runs API services
-- Frontend runs UI
-- Users can register, login, add meals and exercises, and track data
+- Run SQL Server locally  
+- Create database: `daily_fuel_tracker`  
+- Execute scripts in:
 
+```
+server/database/schema/
+```
+
+- Optional seed:
+
+```
+server/sql/foods-seed.sql
+```
 
 ---
 
-### Environment Variables
+## Environment Variables
 
-The following fields must be present in the .env file on the server side:
+Create `.env` in `server`:
 
 ```env
 PORT=5050
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
-JWT_SECRET=change_me
+
+JWT_SECRET=your_secret_key
+
 COOKIE_SAME_SITE=lax
 COOKIE_SECURE=false
+
 DB_USER=sa
-DB_PASSWORD=change_me
+DB_PASSWORD=your_password
 DB_SERVER=localhost
 DB_PORT=1433
 DB_NAME=daily_fuel_tracker
 ```
-
----
-
-### Demo Account
-
-- Email: demo@dailyfuel.local
-- Password: Demo1234!
-
----
-
-### Screenshots
-
-Screenshots can be found in:
-
-docs/screenshots/
-
----
-
-### Live Demo
-
-- Frontend: Coming soon
-- Backend: Coming soon
-
 
 ---
 
 ## Screenshots
 
-### Login Page
-![Login Page](docs/screenshots/login.png)
-
-### Register Page
-![Register Page](docs/screenshots/register.png)
-
-### Dashboard
-![Dashboard](docs/screenshots/dashboard.png)
-
-### Account Modal
-![Account Modal](docs/screenshots/account-modal.png)
-
-### Add Meal Drawer
-![Add Meal Drawer](docs/screenshots/meal-drawer.png)
-
-### Add Exercise Drawer
-![Add Exercise Drawer](docs/screenshots/exercise-drawer.png)
-
-### Calendar Section
-![Calendar Section](docs/screenshots/calendar-section.png)
-
-### Meal History
-![Meal History](docs/screenshots/meals-history.png)
-
-### Meal History Empty Example
-![Meal History Empty Example](docs/screenshots/meals-history-empty.png)
-
-### Exercise History
-![Exercise History](docs/screenshots/exercises-history.png)
-
-### Blog Listing
-![Blog Listing](docs/screenshots/blog-list.png)
-
-### Blog Detail
-![Blog Detail](docs/screenshots/blog-detail.png)
-
-### Water Tracking
-![Water Tracking](docs/screenshots/water-tracking.png)
-
-
-
-
-
----
-
-## 🇹🇷 Türkçe
-
-Daily Fuel Tracker, kullanıcıların günlük beslenme ve egzersiz süreçlerini takip edebildiği bir web uygulamasıdır. Bu proje basit bir demo değildir; gerçek bir uygulama mantığıyla, kullanıcı yönetimi ve veri takibi odaklı geliştirilmiştir.
-
----
-
-### Özellikler
-
-- Kullanıcı kayıt olma ve giriş yapma
-- Hesap yönetimi (şifre değiştirme, çıkış yapma, hesap silme)
-- Günlük öğün ekleme, görüntüleme ve silme
-- Günlük egzersiz ekleme, görüntüleme ve silme
-- Takvim bazlı kayıt takibi
-- Blog listeleme ve detay sayfaları
-- Demo kullanıcı ile test edilebilir yapı
-- Responsive tasarım (mobil, tablet, masaüstü)
-
----
-
-### Kullanılan Teknolojiler
-
-#### Frontend
-- React.js
-- React Router
-- HTML
-- Plain CSS
-
-#### Backend
-- Node.js
-- Express.js
-- MSSQL
-- JWT Authentication
-- Cookie tabanlı kimlik doğrulama
-
-#### Diğer
-- Azure SQL
-- Vercel
-- Render
-- GitHub
-
----
-
-### Proje Yapısı
+Screenshots are available in:
 
 ```
-client/
-server/
-docs/
-README.md
-SUNUM_YAZISI.md
-OZELLIKLER.md
-```
-
----
-
-### Projeyi Çalıştırma
-
-Proje iki bölümden oluşur:
-
-- client → frontend
-- server → backend
-
-#### 1. Backend başlatma
-
-```
-cd server
-npm install
-npm run dev
-```
-
-#### 2. Frontend başlatma
-```
-cd client
-npm install
-npm run dev
-```
-
-#### 3. Kullanım
-- Backend API servislerini çalıştırır
-- Frontend arayüzü sağlar
-- Kullanıcı giriş yapabilir, veri ekleyebilir ve görüntüleyebilir
-
----
-
-### Çevre Değişkenleri
-
-Server tarafında .env dosyasında aşağıdaki alanlar bulunmalıdır:
-
-```env
-PORT=5050
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-JWT_SECRET=change_me
-COOKIE_SAME_SITE=lax
-COOKIE_SECURE=false
-DB_USER=sa
-DB_PASSWORD=change_me
-DB_SERVER=localhost
-DB_PORT=1433
-DB_NAME=daily_fuel_tracker
-```
-
----
-
-### Demo Kullanıcı
-
-- E-posta: demo@dailyfuel.local
-- Şifre: Demo1234!
-
----
-
-### Ekran Görüntüleri
-
-Ekran görüntüleri şu klasörde bulunur:
-
 docs/screenshots/
-
----
-
-### Canlı Linkler
-
-- Frontend: Yakında
-- Backend: Yakında
-
---
-
-### Ekran Görüntüler
-
-Ekran görüntüleri yukarıdaki bölümde yer almaktadır.
+```
