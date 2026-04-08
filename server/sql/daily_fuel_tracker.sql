@@ -1,11 +1,11 @@
 /* =========================================================
    DAILY FUEL TRACKER
-   SQL ODEV TESLIM DOSYASI
-   Veritabani Adi: daily_fuel_tracker
+   SQL TESLİM DOSYASI
+   Veritabanı Adı: daily_fuel_tracker
 ========================================================= */
 
 /* =========================================================
-   1. VERITABANI OLUSTURMA / SECME
+   1. VERİTABANI OLUŞTURMA / SEÇME
 ========================================================= */
 
 IF NOT EXISTS (
@@ -21,10 +21,17 @@ GO
 USE daily_fuel_tracker;
 GO
 
+/* Veritabanının başarıyla oluşturulup oluşturulmadığını kontrol etme */
+SELECT name
+FROM sys.databases
+WHERE name = 'daily_fuel_tracker';
+GO
+
 /* =========================================================
-   2. TABLO OLUSTURMA
+   2. TABLO OLUŞTURMA
 ========================================================= */
 
+/* USERS TABLOSU */
 IF NOT EXISTS (
     SELECT 1
     FROM sys.tables
@@ -41,6 +48,7 @@ BEGIN
 END;
 GO
 
+/* MEALS TABLOSU */
 IF NOT EXISTS (
     SELECT 1
     FROM sys.tables
@@ -62,6 +70,7 @@ BEGIN
 END;
 GO
 
+/* EXERCISES TABLOSU */
 IF NOT EXISTS (
     SELECT 1
     FROM sys.tables
@@ -80,6 +89,7 @@ BEGIN
 END;
 GO
 
+/* WATER_LOGS TABLOSU */
 IF NOT EXISTS (
     SELECT 1
     FROM sys.tables
@@ -98,77 +108,53 @@ BEGIN
 END;
 GO
 
-/* =========================================================
-   3. ORNEK VERI EKLEME
-========================================================= */
-
-INSERT INTO users (full_name, email, password_hash)
-VALUES
-('Demo Kullanıcı', 'demo@dailyfuel.local', 'demo_hash_value'),
-('Test Kullanıcı', 'test@dailyfuel.local', 'test_hash_value');
-GO
-
-INSERT INTO meals (user_id, name, meal_type, calories, protein, carbs, fat, created_at)
-VALUES
-(1, 'Menemen', 'Kahvaltı', 250, 12, 10, 18, GETDATE()),
-(1, 'Mercimek Çorbası', 'Öğle Yemeği', 150, 6, 22, 4, GETDATE()),
-(1, 'Izgara Tavuk', 'Akşam Yemeği', 220, 30, 0, 10, GETDATE()),
-(2, 'Yoğurt', 'Ara Öğün', 110, 6, 8, 5, GETDATE());
-GO
-
-INSERT INTO exercises (user_id, name, duration_minutes, calories_burned, created_at)
-VALUES
-(1, 'Yürüyüş', 30, 120, GETDATE()),
-(1, 'Pilates', 40, 200, GETDATE()),
-(1, 'Bisiklet', 45, 315, GETDATE()),
-(2, 'Koşu', 20, 180, GETDATE());
-GO
-
-INSERT INTO water_logs (user_id, log_date, cup_count, created_at, updated_at)
-VALUES
-(1, CAST(GETDATE() AS DATE), 6, GETDATE(), GETDATE()),
-(2, CAST(GETDATE() AS DATE), 4, GETDATE(), GETDATE());
-GO
-
-/* =========================================================
-   4. TEMEL SELECT SORGULARI
-========================================================= */
-
+/* Tablo yapısını ve kayıtları kontrol etme */
 SELECT * FROM users;
 GO
 
-SELECT * FROM meals;
-GO
-
-SELECT * FROM exercises;
-GO
-
-SELECT * FROM water_logs;
-GO
-
 /* =========================================================
-   5. UPDATE ORNEGI
-   Uygulamada en dogal update mantigi su takibi tarafinda vardir.
+   3. VERİ EKLEME (INSERT)
 ========================================================= */
 
-UPDATE water_logs
-SET cup_count = 8,
-    updated_at = GETDATE()
-WHERE user_id = 1
-  AND log_date = CAST(GETDATE() AS DATE);
+/* USERS TABLOSUNA ÖRNEK VERİ EKLEME */
+IF NOT EXISTS (
+    SELECT 1 FROM users WHERE email = 'demo@dailyfuel.local'
+)
+BEGIN
+    INSERT INTO users (full_name, email, password_hash)
+    VALUES ('Demo Kullanıcı', 'demo@dailyfuel.local', 'demo_hash_value');
+END;
+GO
+
+IF NOT EXISTS (
+    SELECT 1 FROM users WHERE email = 'auth.route@example.com'
+)
+BEGIN
+    INSERT INTO users (full_name, email, password_hash)
+    VALUES ('Auth Route User', 'auth.route@example.com', 'auth_hash_value');
+END;
+GO
+
+/* USERS VERİLERİNİ DOĞRULAMA */
+SELECT *
+FROM users
+WHERE email IN ('demo@dailyfuel.local', 'auth.route@example.com');
+GO
+
+/* MEALS TABLOSUNA ÖRNEK VERİ EKLEME */
+IF NOT EXISTS (
+    SELECT 1 FROM meals WHERE user_id = 1 AND name = 'Yulaf Ezmesi'
+)
+BEGIN
+    INSERT INTO meals (user_id, name, meal_type, calories, protein, carbs, fat, created_at)
+    VALUES
+    (1, 'Yulaf Ezmesi', 'Kahvaltı', 320, 12, 45, 8, DATEADD(DAY, -9, GETDATE())),
+    (1, 'Muz', 'Ara Öğün', 210, 2, 50, 1, DATEADD(DAY, -9, GETDATE()));
+END;
 GO
 
 /* =========================================================
-   6. DELETE ORNEGI
-========================================================= */
-
-DELETE FROM exercises
-WHERE user_id = 2
-  AND name = 'Koşu';
-GO
-
-/* =========================================================
-   7. JOIN SORGULARI
+   4. İLİŞKİSEL SORGULAR (JOIN)
 ========================================================= */
 
 SELECT
@@ -176,25 +162,14 @@ SELECT
     users.email,
     meals.name AS meal_name,
     meals.meal_type,
-    meals.calories,
-    meals.created_at
+    meals.calories
 FROM users
 INNER JOIN meals
     ON users.id = meals.user_id;
 GO
 
-SELECT
-    users.full_name,
-    exercises.name AS exercise_name,
-    exercises.duration_minutes,
-    exercises.calories_burned
-FROM users
-INNER JOIN exercises
-    ON users.id = exercises.user_id;
-GO
-
 /* =========================================================
-   8. GROUP BY SORGULARI
+   5. GROUP BY SORGULARI
 ========================================================= */
 
 SELECT
@@ -204,15 +179,30 @@ FROM meals
 GROUP BY user_id;
 GO
 
+/* =========================================================
+   6. VIEW SORGULARI
+========================================================= */
+
+IF OBJECT_ID('vw_user_daily_summary', 'V') IS NOT NULL
+    DROP VIEW vw_user_daily_summary;
+GO
+
+CREATE VIEW vw_user_daily_summary AS
 SELECT
-    user_id,
-    SUM(calories_burned) AS total_burned_calories
-FROM exercises
-GROUP BY user_id;
+    users.id AS user_id,
+    users.full_name,
+    ISNULL(SUM(meals.calories), 0) AS total_meal_calories
+FROM users
+LEFT JOIN meals
+    ON users.id = meals.user_id
+GROUP BY users.id, users.full_name;
+GO
+
+SELECT * FROM vw_user_daily_summary;
 GO
 
 /* =========================================================
-   9. SUBQUERY ORNEGI
+   7. SUBQUERY KULLANIMI
 ========================================================= */
 
 SELECT
@@ -227,38 +217,25 @@ WHERE calories > (
 GO
 
 /* =========================================================
-   10. VIEW ORNEGI
+   8. ZAMAN ANALİZİ (DATEDIFF)
 ========================================================= */
 
-IF OBJECT_ID('vw_user_daily_summary', 'V') IS NOT NULL
-    DROP VIEW vw_user_daily_summary;
-GO
-
-CREATE VIEW vw_user_daily_summary AS
 SELECT
-    users.id AS user_id,
-    users.full_name,
-    ISNULL(SUM(meals.calories), 0) AS total_meal_calories,
-    ISNULL((
-        SELECT SUM(exercises.calories_burned)
-        FROM exercises
-        WHERE exercises.user_id = users.id
-    ), 0) AS total_exercise_calories
-FROM users
-LEFT JOIN meals
-    ON users.id = meals.user_id
-GROUP BY users.id, users.full_name;
-GO
-
-SELECT * FROM vw_user_daily_summary;
+    u.full_name,
+    m.name AS meal_name,
+    m.created_at,
+    DATEDIFF(DAY, m.created_at, GETDATE()) AS days_passed
+FROM meals m
+INNER JOIN users u
+    ON m.user_id = u.id;
 GO
 
 /* =========================================================
-   11. BACKUP DATABASE ORNEGI
-   Not: Dosya yolu kullanilan bilgisayara gore degistirilmelidir.
+   9. VERİTABANI YEDEKLEME (BACKUP)
+   Mac / Docker SQL Server ortamına uygun yol kullanılmıştır.
 ========================================================= */
 
 BACKUP DATABASE daily_fuel_tracker
-TO DISK = 'C:\\SQLBackups\\daily_fuel_tracker.bak'
-WITH FORMAT, INIT, NAME = 'Daily Fuel Tracker Full Backup';
+TO DISK = '/var/opt/mssql/backup/daily_fuel_tracker.bak'
+WITH FORMAT;
 GO
