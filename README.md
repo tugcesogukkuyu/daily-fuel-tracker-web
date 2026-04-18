@@ -199,8 +199,8 @@ User submits data (meal / exercise / water)
 ### Clone Repository
 
 ```bash
-git clone https://github.com/tugcesogukkuyu/daily-fuel-tracker.git
-cd daily-fuel-tracker
+git clone https://github.com/tugcesogukkuyu/daily-fuel-tracker-web.git
+cd daily-fuel-tracker-web
 ```
 
 ---
