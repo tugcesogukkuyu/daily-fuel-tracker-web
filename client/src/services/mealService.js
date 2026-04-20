@@ -1,4 +1,4 @@
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+const API_BASE_URL = "/api";
 /*
   Create meal
   Yeni yemek kaydini backend'e gonderir.
@@ -78,6 +78,5 @@ export const deleteMeal = async (mealId) => {
 
   return responseData;
 };
-
 
 
