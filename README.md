@@ -6,6 +6,14 @@ The system is designed around date-based tracking, authenticated user flows, and
 
 ---
 
+## Live Demo
+
+The application is live and accessible at:
+
+👉 https://69e64d7ec7f37912511ada8b--calm-strudel-62bb98.netlify.app/
+
+---
+
 ## Project Structure
 
 ```text
